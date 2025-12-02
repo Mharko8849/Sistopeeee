@@ -1,0 +1,34 @@
+# Compilador y flags
+CXX = g++
+CXXFLAGS = -g -std=c++17 -Wall -Wextra -I.
+
+# Carpeta de tests
+TEST_DIR = test
+
+# Archivos fuente del proyecto principal
+SRC = Box.cpp Player.cpp Door.cpp State.cpp Move.cpp Board.cpp GameRules.cpp Dijkstra.cpp Entry.cpp HashTable.cpp AlgoritmoAStar.cpp Node.cpp PriorityQueue.cpp LevelLoader.cpp SolverSokoban.cpp Key.cpp Queue.cpp Goal.cpp MenuSokoban.cpp
+
+# Objetos del proyecto principal
+OBJ = $(SRC:.cpp=.o)
+
+# Archivos de test
+TESTS = test_box test_dijkstra test_door test_gamerules test_hashtable test_move test_player test_state test_astar test_levelloader test_solversokoban test_mediano test_key test_goal test_node test_queue test_priorityqueue test_entry test_board
+
+# Regla por defecto: compilar programa principal y tests
+all: main $(TESTS)
+
+# Compilar programa principal
+main: main.cpp $(OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+# Compilar objetos del proyecto principal
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Compilar cada test
+$(TESTS): %: $(TEST_DIR)/%.cpp $(OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+# Limpiar objetos y ejecutables
+clean:
+	rm -f *.o $(TESTS) debug_* main test_solversokoban_backup test_solversokoban_debug test_time_mediano debug_board debug_iswin debug_mediano4 debug_phase debug_strategic_phase debug_test valgrind_output.log
