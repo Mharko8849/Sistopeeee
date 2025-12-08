@@ -70,7 +70,8 @@ FunctionsCommand* parse_input(char *input, int *count) {
         free(temp_cmd_copy); // Liberamos la copia temporal
 
         // Le agregamos un +1 porque el último debe ser NULL obligatoriamente para execvp
-        cmds[i].FAndVal = (char**) malloc(sizeof(char*) * (args_count + 1));
+        // Y agregamos espacio extra por si necesitamos insertar "bash" al principio
+        cmds[i].FAndVal = (char**) malloc(sizeof(char*) * (args_count + 2));
         cmds[i].TotalArgs = 0;
 
         char *saveptr_args_real;
@@ -78,7 +79,21 @@ FunctionsCommand* parse_input(char *input, int *count) {
         // Volvemos a leer el substring original para guardar los datos
         char *real_arg_substring = strtok_r(current_cmd_substring, " \t\n", &saveptr_args_real);
         
+        // Variable para detectar si es un script .sh
+        int is_shell_script = 0;
+
         while (real_arg_substring != NULL) {
+            // Si es el primer argumento (el comando) y termina en .sh, activamos la bandera
+            if (cmds[i].TotalArgs == 0) {
+                size_t len = strlen(real_arg_substring);
+                if (len > 3 && strcmp(real_arg_substring + len - 3, ".sh") == 0) {
+                    is_shell_script = 1;
+                    // Insertamos "bash" como primer argumento
+                    cmds[i].FAndVal[cmds[i].TotalArgs] = strdup("bash");
+                    cmds[i].TotalArgs += 1;
+                }
+            }
+
             // Creamos la copia
             cmds[i].FAndVal[cmds[i].TotalArgs] = strdup(real_arg_substring);
             cmds[i].TotalArgs += 1;
@@ -92,6 +107,10 @@ FunctionsCommand* parse_input(char *input, int *count) {
         
         if (cmds[i].TotalArgs > 0) {
             cmds[i].Command = cmds[i].FAndVal[0];
+            // Si insertamos bash, el comando a ejecutar es "bash", no el script
+            if (is_shell_script) {
+                 // execvp buscará "bash" en el PATH
+            }
         }
 
         i += 1;
