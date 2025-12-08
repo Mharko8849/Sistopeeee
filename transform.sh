@@ -121,7 +121,29 @@ process_line() {
   fi
   
   # Convertimos/interpretamos los campos (esperamos: TIMESTAMP PID UID COMM %CPU %MEM)
-  read -r timestamp pid uid comm cpu mem <<< "${line}"
+  # Usamos un array para manejar nombres de comandos con espacios
+  read -r -a fields <<< "${line}"
+  
+  # Verificar que tenemos al menos 6 campos
+  if [[ ${#fields[@]} -lt 6 ]]; then
+    echo "transform.sh: línea con formato inválido descartada (faltan campos): ${line}" >&2
+    return
+  fi
+
+  timestamp="${fields[0]}"
+  pid="${fields[1]}"
+  uid="${fields[2]}"
+  
+  # Los últimos dos son siempre CPU y MEM
+  mem="${fields[-1]}"
+  cpu="${fields[-2]}"
+  
+  # El comando es todo lo que está entre el UID (índice 2) y CPU (antepenúltimo)
+  # Reconstruimos el comando uniendo los campos intermedios
+  comm="${fields[3]}"
+  for ((i=4; i<${#fields[@]}-2; i++)); do
+    comm="${comm} ${fields[i]}"
+  done
   
   # Verificar que tenemos todos los campos necesarios
   if [[ -z "${timestamp}" || -z "${pid}" || -z "${uid}" || -z "${comm}" || -z "${cpu}" || -z "${mem}" ]]; then
