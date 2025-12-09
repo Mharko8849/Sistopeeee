@@ -129,16 +129,14 @@ while IFS= read -r line; do
     current_ts="$(normalize_timestamp "${raw_ts}")"
     
     # 3) Procesar el resto: PID UID COMM %CPU %MEM
-    if [[ "$rest_of_line" =~ ([0-9]+\.?[0-9]*)[[:space:]]+([0-9]+\.?[0-9]*)[[:space:]]*$ ]]; then
-      pmem="${BASH_REMATCH[2]}"
-      pcpu="${BASH_REMATCH[1]}"
-      
-      # Remover %CPU y %MEM del final
-      prefix="${rest_of_line% *}"  # Quitar %MEM
-      prefix="${prefix% *}"   # Quitar %CPU
+    # Usamos regex para capturar todo de una vez y evitar problemas con espacios múltiples
+    if [[ "$rest_of_line" =~ ^(.*)[[:space:]]+([0-9]+\.?[0-9]*)[[:space:]]+([0-9]+\.?[0-9]*)[[:space:]]*$ ]]; then
+      prefix="${BASH_REMATCH[1]}"
+      pcpu="${BASH_REMATCH[2]}"
+      pmem="${BASH_REMATCH[3]}"
       
       # Extraer PID, UID y COMM
-      if [[ "$prefix" =~ ^([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+(.+)$ ]]; then
+      if [[ "$prefix" =~ ^[[:space:]]*([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+(.+)$ ]]; then
         pid="${BASH_REMATCH[1]}"
         uid="${BASH_REMATCH[2]}"
         comm="${BASH_REMATCH[3]}"

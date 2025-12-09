@@ -153,6 +153,11 @@ process_data_lines() {
       continue
     fi
     
+    # Ignorar encabezado de aggregate.sh (línea que empieza con COMM)
+    if [[ "${line}" =~ ^COMM ]]; then
+      continue
+    fi
+    
     # Convertir/Interpreta campos separados por espacios
     read -r comm count avg_cpu max_cpu avg_mem max_mem <<< "${line}"
     

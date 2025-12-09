@@ -1,0 +1,1 @@
+./generator.sh -i 1 -t 10 | ./preprocess.sh | ./filter.sh -c 10 -m 5 -r "^(python|firefox|Discord)$" | ./transform.sh --anon-uid | ./aggregate.sh | ./report.sh -o reporte.tsv

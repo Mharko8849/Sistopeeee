@@ -69,40 +69,44 @@ LINES_FILTERED=0
 # // Salidas: modifica variables globales CPU_MIN, MEM_MIN, COMM_REGEX
 # // Descripción: convierte y valida los argumentos del script
 convert_arguments() {
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      -c)
-        shift
-        [[ $# -gt 0 ]] || { echo "Error: falta argumento para -c" >&2; exit 1; }
-        CPU_MIN="$1"
+  # Manejo manual de --help antes de getopts
+  for arg in "$@"; do
+    if [[ "$arg" == "--help" ]]; then
+      print_use
+      exit 0
+    fi
+  done
+
+  while getopts ":c:m:r:l:h" opt; do
+    case ${opt} in
+      c)
+        CPU_MIN="$OPTARG"
         ;;
-      -m)
-        shift
-        [[ $# -gt 0 ]] || { echo "Error: falta argumento para -m" >&2; exit 1; }
-        MEM_MIN="$1"
+      m)
+        MEM_MIN="$OPTARG"
         ;;
-      -r)
-        shift
-        [[ $# -gt 0 ]] || { echo "Error: falta argumento para -r" >&2; exit 1; }
-        COMM_REGEX="$1"
+      r)
+        COMM_REGEX="$OPTARG"
         ;;
-      -l)
-        shift
-        [[ $# -gt 0 ]] || { echo "Error: falta argumento para -l" >&2; exit 1; }
-        LOG_FILE="$1"
+      l)
+        LOG_FILE="$OPTARG"
         ;;
-      -h|--help)
+      h)
         print_use
         exit 0
         ;;
-      *)
-        echo "Error: opción desconocida: $1" >&2
+      \?)
+        echo "Error: opción desconocida: -$OPTARG" >&2
         print_use
         exit 1
         ;;
+      :)
+        echo "Error: falta argumento para -$OPTARG" >&2
+        exit 1
+        ;;
     esac
-    shift
   done
+  shift $((OPTIND -1))
 }
 
 # ================================
