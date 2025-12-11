@@ -1,4 +1,4 @@
-# Integrantes: Marco Ortiz - 21361620-K, Nicolás Rojas - 21602113-4.
+# Ingredientes: Marco Ortiz - 21361620-K, Nicolás Rojas - 21602113-4.
 
 # Compilador a usar
 CC = gcc

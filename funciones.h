@@ -17,9 +17,9 @@ typedef struct {
 } FunctionsCommand;
 
 // Asignamos memoria dinámica para los comandos y sus flags
-FunctionsCommand* parse_input(char *input, int *count);
+FunctionsCommand* interprate_input(char *input, int *count);
 
-
+// Ejecutamos los comandos con pipes
 void execute_pipeline(FunctionsCommand *commands, int count);
 
 // Liberamos memoria de manera adecuada

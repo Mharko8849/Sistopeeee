@@ -1,0 +1,17 @@
+# ==============================================
+# REPORTE DE MONITOREO DE PROCESOS
+# ==============================================
+#
+# Fecha de generación: 2025-12-10T00:12:29-03:00
+# Usuario: mharko
+# Host: mharko-HP-Pavilion-Plus-Laptop-14-eh1xxx
+# Directorio: /home/mharko/Escritorio/Sistope/Lab 2/Sistopeeee
+# Script ejecutado: ./report.sh
+#
+# Generado por pipeline:
+# generator.sh -> preprocess.sh -> filter.sh -> transform.sh -> aggregate.sh -> report.sh
+#
+# ==============================================
+
+COMANDO	PROCESOS	CPU_PROMEDIO	CPU_MAXIMO	MEM_PROMEDIO	MEM_MAXIMO
+Discord	2	61,00	61,00	5,00	5,00

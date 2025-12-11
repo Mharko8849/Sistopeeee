@@ -10,20 +10,20 @@
 #include "funciones.h"
 
 // Entradas: 
-//    char *input: Cadena de texto que contiene la línea de comandos completa (ej: "cmd1 | cmd2").
+//    char *input: Cadena de texto que contiene la línea de comandos completa.
 //    int *count: Puntero a entero donde se almacenará la cantidad de comandos encontrados.
 // Salidas: 
-//    Retorna un puntero a un arreglo de estructuras FunctionsCommand con la información parseada.
+//    Retorna un puntero a un arreglo de estructuras FunctionsCommand con la información interpretada.
 // Descripción: 
 //    Esta función analiza la entrada estándar, cuenta cuántos comandos hay separados por pipes ('|'),
-//    reserva memoria dinámica para las estructuras y luego separa cada comando en sus argumentos individuales
-//    para dejarlos listos para la ejecución.
-FunctionsCommand* parse_input(char *input, int *count) {
+//    luego reserva memoria de manera dinámica para las estructuras y finalmente separa cada comando en sus argumentos individuales
+//    para dejarlos listos para ejecución.
+FunctionsCommand* interprate_input(char *input, int *count) {
     
     // Contamos los comandos para saber cuanta memoria asignar
     *count = 0;
     
-    // Hacemos una copia temporal para contar los pipes sin romper el original aún
+    // Hacemos una copia temporal para contar los pipes sin romper el original
     char *input_copy = strdup(input);
     if (input_copy == NULL) { 
         perror("Error strdup input_copy"); 
@@ -38,7 +38,7 @@ FunctionsCommand* parse_input(char *input, int *count) {
         cmd_capacity += 1;
         cmd_substring = strtok(NULL, "|");
     }
-    free(input_copy); // Liberamos la copia usada solo para contar
+    free(input_copy); // Liberamos la copia usada, ya que era solo para contar
 
     // Asignamos memoria para el arreglo de estructuras
     FunctionsCommand *cmds = (FunctionsCommand*) malloc(sizeof(FunctionsCommand) * cmd_capacity);
@@ -69,8 +69,7 @@ FunctionsCommand* parse_input(char *input, int *count) {
         }
         free(temp_cmd_copy); // Liberamos la copia temporal
 
-        // Le agregamos un +1 porque el último debe ser NULL obligatoriamente para execvp
-        // Y agregamos espacio extra por si necesitamos insertar "bash" al principio
+        // Le agregamos un +1 porque el último debe ser NULL obligatoriamente para el execvp
         cmds[i].FAndVal = (char**) malloc(sizeof(char*) * (args_count + 2));
         cmds[i].TotalArgs = 0;
 
@@ -102,12 +101,11 @@ FunctionsCommand* parse_input(char *input, int *count) {
             real_arg_substring = strtok_r(NULL, " \t\n", &saveptr_args_real);
         }
         
-        // El último puntero debe ser NULL para execvp
+        // El último puntero debe ser NULL para el execvp
         cmds[i].FAndVal[cmds[i].TotalArgs] = NULL;
         
         if (cmds[i].TotalArgs > 0) {
             cmds[i].Command = cmds[i].FAndVal[0];
-            // Si insertamos bash, el comando a ejecutar es "bash", no el script
             if (is_shell_script) {
                  // execvp buscará "bash" en el PATH
             }
@@ -129,7 +127,7 @@ FunctionsCommand* parse_input(char *input, int *count) {
 //    No retorna valor (void).
 // Descripción: 
 //    Itera sobre la lista de comandos creando un proceso hijo (fork) para cada uno.
-//    Configura los pipes (tuberías) para conectar la salida estándar (stdout) de un proceso
+//    Configura los pipes (|) para conectar la salida estándar (stdout) de un proceso
 //    con la entrada estándar (stdin) del siguiente, y ejecuta los comandos mediante execvp.
 void execute_pipeline(FunctionsCommand *commands, int count) {
     int i = 0; 
@@ -162,9 +160,9 @@ void execute_pipeline(FunctionsCommand *commands, int count) {
             
             // Ahora, si hay un pipe siguiente lo conectamos pero con la salida
             if (i < count - 1) {
-                close(pipefd[0]); // Cerramos el pipe actual (lectura)
+                close(pipefd[0]); // Cerramos el pipe actual (Es solo de lectura)
                 dup2(pipefd[1], STDOUT_FILENO);
-                close(pipefd[1]); // Cerramos escritura después de duplicar
+                close(pipefd[1]); // Cerramos el de escritura después de duplicar
             }
 
             // Con esto ejecutamos el comando

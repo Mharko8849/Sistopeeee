@@ -5,35 +5,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h> // Necesario para getopt
+#include <unistd.h> 
 #include "funciones.h"
 
+// Función para el manejo de errores sobre el uso del programa
 void print_usage(char *prog_name) {
     fprintf(stderr, "Uso: %s [-v] [comando...]\n", prog_name);
-    fprintf(stderr, "  -v : Modo verboso (debug)\n");
 }
+
+extern int optind;
 
 int main(int argc, char *argv[]) {
     char input_buffer[MAX_BUFFER];
     int opt;
-    int verbose_flag = 0;
 
-    // 1. Capturar y validar parámetros por medio de getopt
-    // Usamos "+" en optstring para detener el procesamiento en el primer argumento no-opción
-    // Esto permite comandos como: ./lab2 -v generator.sh -i 1
-    while ((opt = getopt(argc, argv, "+v")) != -1) {
-        switch (opt) {
-            case 'v':
-                verbose_flag = 1;
-                break;
-            default:
-                print_usage(argv[0]);
-                exit(EXIT_FAILURE);
+    // Capturamos y validamos los parámetros obtenidos por getopt
+    while (((opt = getopt(argc, argv, "+v")) != -1)) {
+        if (opt!='v'){
+            print_usage(argv[0]);
+            exit(EXIT_FAILURE);
         }
-    }
-
-    if (verbose_flag) {
-        fprintf(stderr, "[DEBUG] Modo verboso activado.\n");
     }
 
     // Verificar si hay argumentos después de las opciones
@@ -41,7 +32,7 @@ int main(int argc, char *argv[]) {
         // Concatenar argumentos restantes (el comando a ejecutar)
         input_buffer[0] = '\0';
         for (int i = optind; i < argc; i++) {
-            // Verificar desbordamiento de buffer
+            // Validamos que la entrada no sea demasiado larga
             if (strlen(input_buffer) + strlen(argv[i]) + 2 > MAX_BUFFER) {
                 fprintf(stderr, "Error: Comando demasiado largo.\n");
                 exit(EXIT_FAILURE);
@@ -52,10 +43,6 @@ int main(int argc, char *argv[]) {
             }
         }
     } else {
-        // Si no hay argumentos, leemos la entrada estándar.
-        if (verbose_flag) {
-            fprintf(stderr, "[DEBUG] Leyendo desde stdin...\n");
-        }
         if (fgets(input_buffer, MAX_BUFFER, stdin) == NULL) {
             return 0; // Si no hay entrada, terminamos.
         }
@@ -72,13 +59,9 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    if (verbose_flag) {
-        fprintf(stderr, "[DEBUG] Procesando comando: %s\n", input_buffer);
-    }
-
-    // Separa la línea por pipes y argumentos.
+    // Separamos la línea por pipes y argumentos.
     int cmd_count = 0;
-    FunctionsCommand *cmds = parse_input(input_buffer, &cmd_count);
+    FunctionsCommand *cmds = interprate_input(input_buffer, &cmd_count);
 
     // Acá ejecutamos los pipeline
     // Se crea los procesos hijos y conectan los pipes.

@@ -1,0 +1,27 @@
+# ==============================================
+# REPORTE DE MONITOREO DE PROCESOS
+# ==============================================
+#
+# Fecha de generación: 2025-12-10T00:06:17-03:00
+# Usuario: mharko
+# Host: mharko-HP-Pavilion-Plus-Laptop-14-eh1xxx
+# Directorio: /home/mharko/Escritorio/Sistope/Lab 2/Sistopeeee
+# Script ejecutado: ./report.sh
+#
+# Generado por pipeline:
+# generator.sh -> preprocess.sh -> filter.sh -> transform.sh -> aggregate.sh -> report.sh
+#
+# ==============================================
+
+COMANDO,PROCESOS,CPU_PROMEDIO,CPU_MAXIMO,MEM_PROMEDIO,MEM_MAXIMO
+gnome-shell,2,5,00,5,00,2,00,2,00
+generator.sh,1,1,00,1,00,0,00,0,00
+pipewire-pulse,2,5,00,5,00,0,00,0,00
+irq/159-rtw89_p,2,2,00,2,00,0,00,0,00
+Xwayland,2,1,00,1,00,1,00,1,00
+Discord,4,33,50,58,00,2,50,4,00
+chrome,4,1,00,1,00,1,50,2,00
+code,6,1,00,1,00,1,67,2,00
+preprocess.sh,1,39,00,39,00,0,00,0,00
+spotify,4,3,00,5,00,2,00,2,00
+pipewire,2,2,00,2,00,0,00,0,00
